@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community Skill Swap - Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #F3F8FB; /* Soft sky blue for a peaceful atmosphere */
+            color: #2D3748;  /* Darker shade for text to complement lighter background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 380px;
+            background-color: #ffffff; /* Clean white background for form */
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+            background: linear-gradient(135deg, #B2D3E4, #B9D6D6); /* Subtle gradient for a Gemini-inspired calm feel */
+        }
+
+        h2 {
+            color: #2D3748; /* Dark gray for title */
+            font-size: 32px;
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border: 2px solid #E2E8F0; /* Light border for inputs */
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border 0.3s;
+            background-color: #F7FAFC; /* Soft background for input fields */
+        }
+
+        input:focus {
+            border-color: #6B46C1; /* Purple for focus to symbolize Gemini's dual nature */
+            outline: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background-color: #6B46C1; /* Bold purple color for the Gemini feel */
+            color: white;
+            font-weight: bold;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #553C9A; /* Darker purple on hover */
+        }
+
+        .error-message {
+            color: #E53E3E; /* Red for error message */
+            text-align: center;
+            margin-top: 10px;
+            display: none;
+        }
+
+        @media screen and (max-width: 768px) {
+            .container {
+                width: 80%;
+            }
+
+            h2 {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Login to Skill Swap</h2>
+        <input type="text" id="username" placeholder="Enter your username">
+        <input type="password" id="password" placeholder="Enter your password">
+        <button onclick="login()">Login</button>
+        <div class="error-message" id="error-message">Invalid username or password!</div>
+    </div>
+
+    <script>
+        function login() {
+            var username = document.getElementById("username").value;
+            var password = document.getElementById("password").value;
+            var errorMessage = document.getElementById("error-message");
+
+            // Simple login validation (for demonstration purposes)
+            if (username === "user" && password === "password123") {
+                localStorage.setItem("loggedIn", "true");
+                window.location.href = "skillSwap.html";  // Redirect to skill swap page
+            } else {
+                errorMessage.style.display = "block";  // Show error message
+            }
+        }
+    </script>
+</body>
+</html>
+
