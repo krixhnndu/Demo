@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FeelFlix - Mood-Based Suggestions</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url('https://source.unsplash.com/1600x900/?cinema,film');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            text-align: center;
+            padding: 50px;
+            transition: background-color 0.5s ease, color 0.5s ease;
+        }
+
+        h1 {
+            color: #f8d210;
+            font-size: 48px;
+            animation: fadeIn 1s ease-out;
+        }
+
+        select, button {
+            padding: 12px;
+            font-size: 18px;
+            margin: 15px;
+            border-radius: 8px;
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        button {
+            background-color: #f8d210;
+            color: black;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        button:hover {
+            background-color: #ffd700;
+            transform: scale(1.1);
+        }
+
+        #result {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+
+        .suggestion {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            margin: 10px;
+            border-radius: 10px;
+            display: inline-block;
+            cursor: pointer;
+            width: 220px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+            transition: transform 0.3s ease;
+        }
+
+        .suggestion:hover {
+            transform: scale(1.05);
+        }
+
+        img {
+            width: 100%;
+            border-radius: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        img:hover {
+            transform: scale(1.05);
+        }
+
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        .happy { background-color: #ffeb3b; }
+        .sad { background-color: #2196f3; }
+        .romantic { background-color: #f06292; }
+        .thriller { background-color: #ff5722; }
+        .adventure { background-color: #8bc34a; }
+        .comedy { background-color: #ff9800; }
+        .sci-fi { background-color: #9c27b0; }
+        .fantasy { background-color: #673ab7; }
+        .horror { background-color: #e91e63; }
+        .mystery { background-color: #3f51b5; }
+    </style>
+</head>
+<body>
+
+    <h1>🎬 FeelFlix 🎭</h1>
+    <p>Find the perfect Movie, TV Series, or Anime for your mood!</p>
+
+    <select id="moodSelect">
+        <option value="happy">Happy 😊</option>
+        <option value="sad">Sad 😢</option>
+        <option value="romantic">Romantic 💖</option>
+        <option value="thriller">Thriller 🔥</option>
+        <option value="adventure">Adventure 🌍</option>
+        <option value="comedy">Comedy 😂</option>
+        <option value="sci-fi">Sci-Fi 🚀</option>
+        <option value="fantasy">Fantasy 🏰</option>
+        <option value="horror">Horror 👻</option>
+        <option value="mystery">Mystery 🕵️‍♂️</option>
+    </select>
+    
+    <button onclick="suggestEntertainment()">Suggest</button>
+
+    <div id="result"></div>
+
+    <script>
+        const OMDB_API_KEY = '9086674e';  
+        const OMDB_BASE_URL = 'https://www.omdbapi.com/';
+        const JIKAN_BASE_URL = 'https://api.jikan.moe/v4/anime';
+
+        // Set background color based on selected mood
+        function setBackgroundColor(mood) {
+            const colors = {
+                happy: 'rgba(255, 235, 59, 0.9)', 
+                sad: 'rgba(33, 150, 243, 0.9)', 
+                romantic: 'rgba(240, 98, 146, 0.9)', 
+                thriller: 'rgba(255, 87, 34, 0.9)', 
+                adventure: 'rgba(139, 195, 74, 0.9)', 
+                comedy: 'rgba(255, 152, 0, 0.9)', 
+                'sci-fi': 'rgba(156, 39, 176, 0.9)', 
+                fantasy: 'rgba(103, 58, 183, 0.9)', 
+                horror: 'rgba(233, 30, 99, 0.9)', 
+                mystery: 'rgba(63, 81, 181, 0.9)'
+            };
+            document.body.style.backgroundColor = colors[mood] || 'rgba(0, 0, 0, 0.7)';
+        }
+
+        // Fetch Movies or Series from OMDb API
+        async function getEntertainmentByMood(mood, type) {
+            let url = `${OMDB_BASE_URL}?apikey=${OMDB_API_KEY}&s=${mood}&type=${type}`;
+            try {
+                let response = await fetch(url);
+                let data = await response.json();
+                if (data.Search) {
+                    // Fetch detailed info for 10 items
+                    let details = await Promise.all(data.Search.slice(0, 10).map(async item => {
+                        let detailsUrl = `${OMDB_BASE_URL}?apikey=${OMDB_API_KEY}&i=${item.imdbID}`;
+                        let detailsResponse = await fetch(detailsUrl);
+                        let detailsData = await detailsResponse.json();
+                        return {
+                            title: detailsData.Title,
+                            year: detailsData.Year || "N/A",
+                            genre: detailsData.Genre || "N/A",
+                            imdbRating: detailsData.imdbRating || "N/A",
+                            poster: detailsData.Poster !== "N/A" ? detailsData.Poster : "https://via.placeholder.com/100"
+                        };
+                    }));
+                    return details;
+                }
+            } catch (error) {
+                console.error(`Error fetching ${type}:`, error);
+            }
+            return [];
+        }
+
+        // Fetch Anime from Jikan API
+        async function getAnimeByMood(mood) {
+            let url = `${JIKAN_BASE_URL}?q=${mood}&limit=10`; // Increased to 10
+            try {
+                let response = await fetch(url);
+                let data = await response.json();
+                return data.data.map(anime => ({
+                    title: anime.title,
+                    year: anime.year || "N/A",
+                    genre: anime.genres.map(g => g.name).join(", ") || "N/A",
+                    imdbRating: anime.score || "N/A",
+                    poster: anime.images.jpg.image_url
+                }));
+            } catch (error) {
+                console.error("Error fetching anime:", error);
+                return [];
+            }
+        }
+
+        // Fetch and Display Movies, Series, and Anime
+        async function suggestEntertainment() {
+            let mood = document.getElementById("moodSelect").value;
+            setBackgroundColor(mood); // Change background color
+
+            let movies = await getEntertainmentByMood(mood, "movie");
+            let series = await getEntertainmentByMood(mood, "series");
+            let anime = await getAnimeByMood(mood);
+
+            let resultDiv = document.getElementById("result");
+            resultDiv.innerHTML = "<h2>🎬 Movies</h2>";
+
+            if (movies.length > 0) {
+                movies.forEach(movie => {
+                    resultDiv.innerHTML += `
+                        <div class="suggestion">
+                            <img src="${movie.poster}">
+                            <p><b>${movie.title}</b> (${movie.year})</p>
+                            <p>⭐ IMDB: ${movie.imdbRating}</p>
+                            <p>🎭 Genre: ${movie.genre}</p>
+                        </div>
+                    `;
+                });
+            } else {
+                resultDiv.innerHTML += `<p>No movies found.</p>`;
+            }
+
+            resultDiv.innerHTML += "<h2>📺 TV Series</h2>";
+
+            if (series.length > 0) {
+                series.forEach(show => {
+                    resultDiv.innerHTML += `
+                        <div class="suggestion">
+                            <img src="${show.poster}">
+                            <p><b>${show.title}</b> (${show.year})</p>
+                            <p>⭐ IMDB: ${show.imdbRating}</p>
+                            <p>🎭 Genre: ${show.genre}</p>
+                        </div>
+                    `;
+                });
+            } else {
+                resultDiv.innerHTML += `<p>No TV series found.</p>`;
+            }
+
+            resultDiv.innerHTML += "<h2>🎥 Anime</h2>";
+
+            if (anime.length > 0) {
+                anime.forEach(animeItem => {
+                    resultDiv.innerHTML += `
+                        <div class="suggestion">
+                            <img src="${animeItem.poster}">
+                            <p><b>${animeItem.title}</b> (${animeItem.year})</p>
+                            <p>⭐ Rating: ${animeItem.imdbRating}</p>
+                            <p>🎭 Genre: ${animeItem.genre}</p>
+                        </div>
+                    `;
+                });
+            } else {
+                resultDiv.innerHTML += `<p>No anime found.</p>`;
+            }
+        }
+    </script>
+
+</body>
+</html>
