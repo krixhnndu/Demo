@@ -1,0 +1,107 @@
+body {
+    background: url('https://source.unsplash.com/1600x900/?cinema,movie') no-repeat center center fixed;
+    background-size: cover;
+    color: white;
+    text-align: center;
+    padding: 50px;
+    position: relative;
+}
+
+body::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: -1;
+}
+
+h1 {
+    font-size: 50px;
+    font-weight: bold;
+    color: #f8d210;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    text-shadow: 3px 3px 10px rgba(255, 215, 0, 0.8);
+    animation: glow 2s infinite alternate, move 3s infinite linear;
+    display: inline-block;
+}
+
+/* Glowing Effect */
+@keyframes glow {
+    from {
+        text-shadow: 3px 3px 15px rgba(255, 215, 0, 0.6);
+    }
+    to {
+        text-shadow: 3px 3px 25px rgba(255, 255, 0, 1);
+    }
+}
+
+/* Subtle Horizontal Movement */
+@keyframes move {
+    0% { transform: translateX(0px); }
+    50% { transform: translateX(10px); }
+    100% { transform: translateX(0px); }
+}
+
+select {
+    padding: 10px;
+    font-size: 16px;
+    margin: 10px;
+    border-radius: 5px;
+    border: none;
+}
+
+button {
+    background-color: #f8d210;
+    color: black;
+    cursor: pointer;
+    padding: 12px 20px;
+    font-size: 18px;
+    border-radius: 8px;
+    border: none;
+    margin-top: 20px;
+    transition: all 0.3s ease;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+button:hover {
+    background-color: #ffd700;
+}
+
+#result {
+    margin-top: 20px;
+    font-size: 18px;
+}
+
+.suggestion {
+    background: rgba(0, 0, 0, 0.8);
+    padding: 10px;
+    margin: 10px;
+    border-radius: 8px;
+    display: inline-block;
+    cursor: pointer;
+    width: 200px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    text-decoration: none;
+    color: white;
+}
+
+.suggestion:hover {
+    transform: scale(1.05);
+    box-shadow: 0px 4px 10px rgba(255, 255, 0, 0.5);
+}
+
+.suggestion:active {
+    transform: scale(0.95);
+}
+
+img {
+    width: 100px;
+    height: auto;
+    border-radius: 5px;
+}
