@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mood-Based Movie/Series/Anime Suggestion</title>
+    <!-- Google Fonts for elegant typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(to right, #1f1c2c, #928DAB);
+            color: white;
+            text-align: center;
+            padding: 50px;
+            overflow-x: hidden;
+            transition: all 0.5s ease-in-out;
+        }
+
+        h1 {
+            font-size: 3em;
+            color: #f8d210;
+            margin-bottom: 30px;
+        }
+
+        select, button {
+            padding: 12px 20px;
+            font-size: 16px;
+            border-radius: 10px;
+            border: 2px solid #f8d210;
+            margin: 20px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        select {
+            background-color: #2b2b2b;
+            color: white;
+            width: 220px;
+        }
+
+        button {
+            background-color: #f8d210;
+            color: black;
+            font-weight: bold;
+            width: 220px;
+            border: 2px solid #f8d210;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        button:hover {
+            background-color: #ffd700;
+            transform: translateY(-5px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        #result {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .suggestion {
+            background: #2b2b2b;
+            padding: 20px;
+            border-radius: 15px;
+            width: 250px;
+            text-align: left;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .suggestion img {
+            width: 100%;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+        .suggestion:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .suggestion .title {
+            font-size: 1.2em;
+            margin: 10px 0;
+            color: #f8d210;
+        }
+
+        .suggestion .desc {
+            font-size: 0.9em;
+            color: #bbb;
+        }
+
+        .suggestion .copy-btn {
+            background-color: #444;
+            padding: 8px 14px;
+            margin-top: 10px;
+            font-size: 0.8em;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .suggestion .copy-btn:hover {
+            background-color: #f8d210;
+        }
+
+        /* Mood-based Background Colors */
+        .mood-bg-happy { background-color: #ffeb3b; }
+        .mood-bg-sad { background-color: #1e3d59; }
+        .mood-bg-romantic { background-color: #ff66cc; }
+        .mood-bg-thriller { background-color: #d32f2f; }
+        .mood-bg-adventure { background-color: #388e3c; }
+        .mood-bg-anime { background-color: #9c27b0; }
+    </style>
+</head>
+<body>
+
+    <h1>🎬 Mood-Based Movie/Series/Anime Suggestion 🎭</h1>
+
+    <select id="moodSelect" onchange="changeBackgroundMood()">
+        <option value="happy">Happy 😊</option>
+        <option value="sad">Sad 😢</option>
+        <option value="romantic">Romantic 💖</option>
+        <option value="thriller">Thriller 🔥</option>
+        <option value="adventure">Adventure 🌍</option>
+        <option value="anime">Anime 🎌</option>
+    </select>
+
+    <button onclick="suggestMedia()">Suggest</button>
+
+    <div id="result"></div>
+
+    <script>
+        const mediaSuggestions = {
+            "happy": [
+                {title: "The Pursuit of Happyness", image: "https://via.placeholder.com/200x300", description: "An inspiring story of perseverance."},
+                {title: "Zootopia", image: "https://via.placeholder.com/200x300", description: "A delightful adventure with a bunny cop."},
+                {title: "Brooklyn Nine-Nine", image: "https://via.placeholder.com/200x300", description: "A hilarious and lovable police procedural."}
+            ],
+            "sad": [
+                {title: "A Silent Voice (Anime)", image: "https://via.placeholder.com/200x300", description: "A touching story of redemption."},
+                {title: "The Fault in Our Stars", image: "https://via.placeholder.com/200x300", description: "A love story with a heartbreaking twist."},
+                {title: "Your Name (Anime)", image: "https://via.placeholder.com/200x300", description: "A magical tale of connection."}
+            ],
+            "romantic": [
+                {title: "Titanic", image: "https://via.placeholder.com/200x300", description: "An epic romance amidst a tragedy."},
+                {title: "Pride and Prejudice", image: "https://via.placeholder.com/200x300", description: "A classic love story of misunderstanding."},
+                {title: "Kimi ni Todoke (Anime)", image: "https://via.placeholder.com/200x300", description: "A sweet romance between two shy teens."}
+            ],
+            "thriller": [
+                {title: "Inception", image: "https://via.placeholder.com/200x300", description: "A mind-bending heist within dreams."},
+                {title: "Stranger Things", image: "https://via.placeholder.com/200x300", description: "A supernatural thriller with a retro vibe."},
+                {title: "Death Note (Anime)", image: "https://via.placeholder.com/200x300", description: "A deadly game of cat and mouse."}
+            ],
+            "adventure": [
+                {title: "Interstellar", image: "https://via.placeholder.com/200x300", description: "A space adventure to save humanity."},
+                {title: "One Piece (Anime)", image: "https://via.placeholder.com/200x300", description: "A pirate's journey in search of treasure."},
+                {title: "The Lord of the Rings", image: "https://via.placeholder.com/200x300", description: "An epic journey to destroy a powerful ring."}
+            ],
+            "anime": [
+                {title: "Attack on Titan", image: "https://via.placeholder.com/200x300", description: "Humans fight for survival against giant creatures."},
+                {title: "Demon Slayer", image: "https://via.placeholder.com/200x300", description: "A boy becomes a demon hunter to save his sister."},
+                {title: "Steins;Gate", image: "https://via.placeholder.com/200x300", description: "Time travel thriller with deep consequences."}
+            ]
+        };
+
+        function suggestMedia() {
+            let selectedMood = document.getElementById("moodSelect").value;
+            let resultDiv = document.getElementById("result");
+            resultDiv.innerHTML = ""; // Clear previous results
+
+            mediaSuggestions[selectedMood].forEach(media => {
+                let mediaElement = document.createElement("div");
+                mediaElement.classList.add("suggestion");
+
+                let mediaImage = document.createElement("img");
+                mediaImage.src = media.image;
+                mediaElement.appendChild(mediaImage);
+
+                let mediaTitle = document.createElement("div");
+                mediaTitle.classList.add("title");
+                mediaTitle.innerText = media.title;
+                mediaElement.appendChild(mediaTitle);
+
+                let mediaDesc = document.createElement("div");
+                mediaDesc.classList.add("desc");
+                mediaDesc.innerText = media.description;
+                mediaElement.appendChild(mediaDesc);
+
+                let copyButton = document.createElement("button");
+                copyButton.classList.add("copy-btn");
+                copyButton.innerText = "Copy Title";
+                copyButton.onclick = function() {
+                    navigator.clipboard.writeText(media.title);
+                    alert("Copied to clipboard: " + media.title);
+                };
+                mediaElement.appendChild(copyButton);
+
+                resultDiv.appendChild(mediaElement);
+            });
+        }
+
+        function changeBackgroundMood() {
+            let selectedMood = document.getElementById("moodSelect").value;
+            document.body.className = "mood-bg-" + selectedMood;
+        }
+    </script>
+
+</body>
+</html>
